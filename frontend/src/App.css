@@ -1,0 +1,40 @@
+.scroll-box {
+  height: 350px;
+  overflow-y: scroll;
+}
+
+/* WebKit-based browsers (Chrome, Edge, Safari) */
+.scroll-box::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-box::-webkit-scrollbar-track {
+  background: #e0f2fe; /* light blue */
+  border-radius: 8px;
+}
+
+.scroll-box::-webkit-scrollbar-thumb {
+  background-color: #646cff; /* blue-500 */
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Firefox */
+.scroll-box {
+  scrollbar-width: thin;
+  scrollbar-color: #646cff #e0f2fe;
+}
+
+@keyframes zoom-in-out {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+}
+
+.animate-zoom-in-out {
+  animation: zoom-in-out 1.5s infinite;
+}

@@ -1,0 +1,31 @@
+# Node modules
+node_modules/
+**/node_modules/
+
+# Build files
+build/
+dist/
+
+# Temp files & uploads
+backend/src/public/temp/
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+
+# Logs
+*.log
+
+# Environment
+.env
+
+
+#folders
+AWS MUX DESIGN/

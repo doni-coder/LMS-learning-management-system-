@@ -1,0 +1,162 @@
+[
+  {
+    "id": "course_001",
+    "title": "Full Stack Web Development",
+    "thumbnail": "https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg",
+    "description": "Learn to build modern web applications using HTML, CSS, JavaScript, React, Node.js, and MongoDB.",
+    "price": 4999,
+    "created_date": "2025-06-01",
+    "is_published": true,
+    "instructor": {
+      "id": "instructor_001",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "profile_pic": "https://randomuser.me/api/portraits/men/1.jpg",
+      "about": "Senior web developer and educator.",
+      "experience": "7+ years building and teaching web apps."
+    },
+    "reviews": [
+      {
+        "id": "review_001",
+        "student_id": "student_001",
+        "review": "Amazing course, covered full stack thoroughly.",
+        "points": 5
+      },
+      {
+        "id": "review_002",
+        "student_id": "student_002",
+        "review": "Good content, could use more advanced projects.",
+        "points": 4
+      }
+    ],
+    "tags": ["Full Stack", "Web Development", "React", "Node.js"]
+  },
+  {
+    "id": "course_002",
+    "title": "Data Science Bootcamp",
+    "thumbnail": "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg",
+    "description": "Master Python, statistics, machine learning, and real-world data analysis projects in one complete course.",
+    "price": 5999,
+    "created_date": "2025-06-01",
+    "is_published": true,
+    "instructor": {
+      "id": "instructor_002",
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "profile_pic": "https://randomuser.me/api/portraits/women/2.jpg",
+      "about": "Data Scientist with industry and academic experience.",
+      "experience": "6+ years teaching data science and machine learning."
+    },
+    "reviews": [
+      {
+        "id": "review_003",
+        "student_id": "student_003",
+        "review": "Very comprehensive and practical course.",
+        "points": 5
+      },
+      {
+        "id": "review_004",
+        "student_id": "student_004",
+        "review": "Loved the projects, but Python basics could be improved.",
+        "points": 4
+      }
+    ],
+    "tags": ["Data Science", "Python", "Machine Learning"]
+  },
+  {
+    "id": "course_003",
+    "title": "Mastering React and Redux",
+    "thumbnail": "https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg",
+    "description": "Deep dive into building scalable frontend apps using React, Redux Toolkit, and modern hooks.",
+    "price": 3499,
+    "created_date": "2025-06-01",
+    "is_published": true,
+    "instructor": {
+      "id": "instructor_003",
+      "name": "Alex Johnson",
+      "email": "alex@example.com",
+      "profile_pic": "https://randomuser.me/api/portraits/men/3.jpg",
+      "about": "Frontend architect and React specialist.",
+      "experience": "8+ years building scalable React applications."
+    },
+    "reviews": [
+      {
+        "id": "review_005",
+        "student_id": "student_005",
+        "review": "Perfect for React developers wanting to master Redux.",
+        "points": 5
+      },
+      {
+        "id": "review_006",
+        "student_id": "student_006",
+        "review": "Redux part is great, could use more real-world examples.",
+        "points": 4
+      }
+    ],
+    "tags": ["React", "Redux", "Frontend"]
+  },
+  {
+    "id": "course_004",
+    "title": "Python for Beginners",
+    "thumbnail": "https://images.pexels.com/photos/1181676/pexels-photo-1181676.jpeg",
+    "description": "Start coding with Python from scratch. Perfect for beginners with no programming background.",
+    "price": 1999,
+    "created_date": "2025-06-01",
+    "is_published": true,
+    "instructor": {
+      "id": "instructor_004",
+      "name": "Emily Brown",
+      "email": "emily@example.com",
+      "profile_pic": "https://randomuser.me/api/portraits/women/4.jpg",
+      "about": "Software engineer passionate about teaching coding.",
+      "experience": "4+ years teaching programming to beginners."
+    },
+    "reviews": [
+      {
+        "id": "review_007",
+        "student_id": "student_007",
+        "review": "Perfect for absolute beginners, very easy to follow.",
+        "points": 5
+      },
+      {
+        "id": "review_008",
+        "student_id": "student_008",
+        "review": "Good start, but would love more exercises.",
+        "points": 4
+      }
+    ],
+    "tags": ["Python", "Programming Basics", "Beginner Friendly"]
+  },
+  {
+    "id": "course_005",
+    "title": "Machine Learning A-Z",
+    "thumbnail": "https://images.pexels.com/photos/3861972/pexels-photo-3861972.jpeg",
+    "description": "Hands-on course to understand algorithms, model building, and deploying machine learning solutions.",
+    "price": 5499,
+    "created_date": "2025-06-01",
+    "is_published": true,
+    "instructor": {
+      "id": "instructor_005",
+      "name": "Andrew Lee",
+      "email": "andrew@example.com",
+      "profile_pic": "https://randomuser.me/api/portraits/men/5.jpg",
+      "about": "ML engineer with real-world deployment expertise.",
+      "experience": "5+ years building and teaching ML systems."
+    },
+    "reviews": [
+      {
+        "id": "review_009",
+        "student_id": "student_009",
+        "review": "Very practical and real-world focused. Loved it!",
+        "points": 5
+      },
+      {
+        "id": "review_010",
+        "student_id": "student_010",
+        "review": "Great explanations, deployment section is gold.",
+        "points": 5
+      }
+    ],
+    "tags": ["Machine Learning", "AI", "Model Deployment"]
+  }
+]
