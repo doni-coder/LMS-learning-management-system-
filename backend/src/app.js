@@ -41,11 +41,12 @@ const sessionConfig = session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: false, // use true in production with HTTPS
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
-    sameSite: "lax", // or 'none' if using cross-origin
+    secure: true,          // IMPORTANT
+    sameSite: "none",      // IMPORTANT
+    maxAge: 24 * 60 * 60 * 1000,
   },
 });
+
 
 usePassportLocal();
 usePassportGoogle();
