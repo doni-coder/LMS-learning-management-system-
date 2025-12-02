@@ -73,7 +73,7 @@ const suggestPagenatedCourses = async (req, res) => {
       console.log("row.review_id", row.review_id)
       if (row.review_id) {
         const isInclude = courseMap[courseId].reviews.some((review) => review.id === row.review_id)
-        console.log("isInclude",isInclude)
+        console.log("isInclude", isInclude)
         if (!isInclude) {
           courseMap[courseId].reviews.push({
             id: row.review_id,
@@ -108,4 +108,113 @@ const suggestPagenatedCourses = async (req, res) => {
   }
 };
 
-export { suggestPagenatedCourses };
+
+const getSingleCourseDetail = async (req, res) => {
+  try {
+    const { courseId } = req.params
+    if (!courseId) {
+      return res.status(400).json({
+        "message": "course is required"
+      })
+    }
+
+    let courseMap = {}
+
+    const course = await pool.query(
+      ` SELECT 
+        C.ID AS COURSE_ID,
+        C.TITLE,
+        C.THUMBNAIL,
+        C.DESCRIPTION,
+        C.PRICE,
+        C.CREATED_DATE,
+        C.IS_PUBLISHED,
+
+        I.ID AS INSTRUCTOR_ID,
+        I.NAME AS INSTRUCTOR_NAME,
+        I.EMAIL AS INSTRUCTOR_EMAIL,
+        I.PROFILE_PIC,
+        I.ABOUT,
+        I.EXPERIENCE,
+
+        R.ID AS REVIEW_ID,
+        R.STUDENT_ID,
+        R.REVIEW,
+        R.POINTS,
+
+        CT.ID AS TAGS_ID,
+        CT.TAGS
+
+        FROM COURSES C
+        LEFT JOIN INSTRUCTOR I ON I.ID = C.INSTRUCTOR_ID
+        LEFT JOIN REVIEWS R ON R.COURSE_ID = C.ID
+        LEFT JOIN COURSES_TAGS CT ON CT.COURSE_ID = C.ID
+        WHERE C.ID = $1
+      `,
+      [courseId]
+    );
+
+    if (course.rows.length == 0) {
+      return res.status(200).json({
+        message: "course not found"
+      })
+    }
+
+    course.rows.forEach((row) => {
+      const courseId = row.course_id;
+      if (!courseMap[courseId]) {
+        courseMap[courseId] = {
+          id: row.course_id,
+          title: row.title,
+          thumbnail: row.thumbnail,
+          description: row.description,
+          price: row.price,
+          created_date: row.created_date,
+          is_published: row.is_published,
+          instructor: {
+            id: row.instructor_id,
+            name: row.instructor_name,
+            email: row.instructor_email,
+            profile_pic: row.profile_pic,
+            about: row.about,
+            experience: row.experience,
+          },
+          reviews: [],
+          tags: [],
+        };
+      }
+      console.log("row.review_id", row.review_id)
+      if (row.review_id) {
+        const isInclude = courseMap[courseId].reviews.some((review) => review.id === row.review_id)
+        console.log("isInclude", isInclude)
+        if (!isInclude) {
+          courseMap[courseId].reviews.push({
+            id: row.review_id,
+            student_id: row.student_id,
+            review: row.review,
+            points: row.points,
+          });
+        }
+
+      }
+      if (row.tags_id) {
+        const isInclude = courseMap[courseId].tags?.includes(row.tags)
+        if (!isInclude) {
+          courseMap[courseId].tags.push(row.tags);
+        }
+      }
+    });
+
+    return res.status(200).json({
+      message: "course fetched",
+      course: courseMap[courseId]
+    })
+
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message
+    })
+  }
+}
+
+export { suggestPagenatedCourses, getSingleCourseDetail };

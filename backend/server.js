@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
 import { server } from "./src/app.js";
 import { connectDB } from "./src/db/noSql.db.js";
-import init from "./src/services/awsVideoConsumer.service.js";
 
 connectDB()
   .then(() => {
@@ -10,14 +9,6 @@ connectDB()
     server.listen(process.env.PORT || 5050, () => {
       console.log(`Server is running on port ${process.env.PORT || 5050}`);
     });
-    // init()
-    //   .then(() => {
-    //     console.log("AWS Video Consumer initialized successfully");
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error initializing AWS Video Consumer:", error);
-    //     process.exit(1); // Exit the process with failure
-    //   });
   })
   .catch((error) => {
     console.error("MongoDB connection error:", error);
