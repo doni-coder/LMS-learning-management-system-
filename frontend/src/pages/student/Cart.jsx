@@ -36,9 +36,10 @@ const Cart = () => {
   useEffect(() => {
     cartItem = localStorage.getItem(`cartItems:${user?.id}`);
     setCartItems(JSON.parse(cartItem));
+    console.log("cartItem", cart);
   }, [user, cart]);
 
-  let total = cartItems?.reduce((total, item) => total + Number(item.price), 0);
+  let total = cart?.reduce((total, item) => total + Number(item.price), 0);
   const stringTotal = String(total);
   console.log("string total:", stringTotal);
   const arrayTotal = stringTotal.split("");
@@ -71,9 +72,16 @@ const Cart = () => {
     // }
   };
 
-  const handleRemove = (id) => {
+  const handleRemove = async (id) => {
     console.log("course id:", id);
-    dispatch(removeFromCart({ userId: user?.id, courseId: id }));
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/student/removeFromCart`,
+      {
+        courseId: id,
+      }
+    ).then((response)=>{
+      dispatch(removeFromCart({ userId: user?.id, courseId: id }));
+    })
     // Add remove logic (Redux, context, or backend call)
   };
 
@@ -81,12 +89,12 @@ const Cart = () => {
     <div className="max-w-5xl mx-auto min-h-[50vh] p-6 dark:bg-gray-900 rounded mt-0">
       <h2 className="text-[30px] font-bold mb-6">My Cart</h2>
 
-      {cartItems?.length === 0 ? (
+      {cart?.length === 0 ? (
         <p className="text-gray-500">Your cart is empty.</p>
       ) : (
         <>
           <div className="space-y-4">
-            {cartItems?.map((item) => (
+            {cart?.map((item) => (
               <div
                 key={item?.id}
                 className=" dark:bg-gray-800 relative px-4 py-4 rounded shadow-sm"
@@ -108,7 +116,7 @@ const Cart = () => {
                       {item.title.slice(0, 15)}...
                     </h2>
                     <p className="text-[13px] text-gray-600">
-                      Instructor: {item?.instructor.name}
+                      {/* Instructor: {item?.instructor.name} */}
                     </p>
                     <p className="text-green-600 font-bold">₹{item?.price}</p>
                   </div>

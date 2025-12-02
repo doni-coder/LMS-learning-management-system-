@@ -31,4 +31,19 @@ const getPushNotification = async (req, res) => {
     }
 }
 
-export { getPushNotification }
+const liveStreamEndHandle = async (req, res) => {
+    try {
+        const instructorId = req.user?.id
+        const result = await liveStreamNotification.deleteMany({ instructorId: instructorId })
+        console.log("live:", result)
+        return res.status(200).json({
+            message: "live stream ended"
+        })
+    } catch (error) {
+        return res.status(200).json({
+            message: error.message
+        })
+    }
+}
+
+export { getPushNotification, liveStreamEndHandle }

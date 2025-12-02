@@ -41,14 +41,15 @@ function Student() {
   useEffect(() => {
     setLoading(true);
     const fetchEnrolledCourses = async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/course/enrolled-course`
-      );
-
-      if (response.status === 200) {
-        setCourses(response.data.courses);
-        setLoading(false);
-      }
+      await axios
+        .get(`${import.meta.env.VITE_API_URL}/api/course/enrolled-course`)
+        .then((response) => {
+          setCourses(response.data.courses);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+        });
     };
     fetchEnrolledCourses();
   }, []);

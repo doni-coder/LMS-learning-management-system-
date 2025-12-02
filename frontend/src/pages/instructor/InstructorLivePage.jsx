@@ -3,15 +3,21 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSocket } from "@/context/SocketProvider";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+axios.defaults.withCredentials = true;
 
 const InstructorLivePage = () => {
   const [isChatEnabled, setIsChatEnabled] = useState(true);
+  const navigate = useNavigate();
   const [isStreaming, setIsStreaming] = useState(false);
   const [instructorStream, setInstructorStream] = useState(null);
   const instructorStreamRef = useRef(null);
   const [connectedStudents, setConnectedStudents] = useState(new Set());
   const [pendingStudents, setPendingStudent] = useState([]);
   const [liveCharts, setLiveCharts] = useState([]);
+  const [isMute, setMute] = useState(false);
   const [message, setmessage] = useState("");
   const { courseId } = useParams();
   const user = useSelector((state) => state.user.user);
@@ -36,13 +42,13 @@ const InstructorLivePage = () => {
   );
 
   const handleReceiveMessage = useCallback((data) => {
-    console.log(data)
-    setLiveCharts((prev)=>{
+    console.log(data);
+    setLiveCharts((prev) => {
       if (prev.length === 10) {
-        return [data]
+        return [data];
       }
-      return [...prev, data]
-    })
+      return [...prev, data];
+    });
   }, []);
 
   const handelUserAnswer = useCallback(
@@ -58,23 +64,81 @@ const InstructorLivePage = () => {
         audio: true,
         video: true,
       });
+
+      // Default: audio ON
+      stream.getAudioTracks()[0].enabled = true;
+
       setInstructorStream(stream);
+      instructorStreamRef.current = stream; // ensure ref is updated immediately
 
       const allStudents = [...connectedStudents, ...pendingStudents];
-
-      console.log("all students:", allStudents);
-
       for (let studentId of allStudents) {
-        console.log("studentId", studentId);
         const offer = await peers.getOffer(studentId, stream);
         socket.emit("offer", { id: studentId, offer });
         peers.handleICECandidate(socket, studentId);
       }
     } else {
-      instructorStream?.getTracks().forEach((track) => track.stop());
+      if (instructorStream) {
+        instructorStream.getTracks().forEach((t) => t.stop());
+      }
       setInstructorStream(null);
     }
+
     setIsStreaming((prev) => !prev);
+  };
+
+  const handleMuteToggle = () => {
+    const stream = instructorStreamRef.current;
+    if (!stream) return;
+
+    const audioTrack = stream.getAudioTracks()[0];
+    if (!audioTrack) return;
+
+    audioTrack.enabled = !audioTrack.enabled;
+    setMute(!audioTrack.enabled);
+
+    peers.peers.forEach((peerConnection, studentId) => {
+      const sender = peerConnection
+        .getSenders()
+        .find((s) => s.track && s.track.kind === "audio");
+
+      if (sender) {
+        sender.replaceTrack(audioTrack);
+      }
+    });
+  };
+
+  const handleStreamEnd = async () => {
+    try {
+      await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/live-stream/live-classes-end`
+      );
+
+      socket.emit("instructor:end-stream", {
+        courseId,
+      });
+
+      // Stop camera & mic completely
+      if (instructorStreamRef.current) {
+        instructorStreamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+        instructorStreamRef.current = null;
+      }
+
+      // close WebRTC connections to all students
+      peers.peers.forEach((peerConnection, studentId) => {
+        peerConnection.close();
+        peers.peers.delete(studentId);
+        console.log("Disconnected student:", studentId);
+      });
+
+      setInstructorStream(null);
+      navigate("/instructor-dashboard");
+    } catch (error) {
+      console.log("Stream end error:", error);
+      alert("Something went wrong");
+    }
   };
 
   useEffect(() => {
@@ -112,99 +176,95 @@ const InstructorLivePage = () => {
   };
 
   return (
-    <div className=" dark:bg-gray-900">
-      {/* Streaming Section */}
-      <div className="relative h-[320px] md:h-full bg-black md:rounded-2xl mt-1 shadow-lg overflow-hidden w-full max-w-5xl mx-auto aspect-video">
-        <video
-          id="instructor-video"
-          className="w-full h-full object-cover"
-          autoPlay
-          ref={(videoEl) => {
-            if (videoEl && instructorStream) {
-              videoEl.srcObject = instructorStream;
-              videoEl.volume = 1.0;
-            }
-          }}
-          muted={true}
-          playsInline
-        ></video>
+    <>
+      <div className="absolute text-center z-1000 flex flex-col justify-center sm:left-10 top-26 right-10">
+        <LogOut
+          onClick={handleStreamEnd}
+          size={26}
+          className="cursor-pointer"
+          color="red"
+        />
+      </div>
+      <div className="dark:bg-gray-900 relative flex flex-col md:flex-row max-w-6xl mx-auto gap-4 p-4">
+        {/* Video Section */}
+        <div className="relative w-full md:w-2/3 bg-black rounded-lg overflow-hidden shadow-lg">
+          <video
+            id="instructor-video"
+            className="w-full h-[300px] md:h-[420px] object-cover"
+            autoPlay
+            muted={true}
+            playsInline
+            ref={(videoEl) => {
+              if (videoEl && instructorStream) {
+                videoEl.srcObject = instructorStream;
+              }
+            }}
+          ></video>
 
-        {/* Live Badge + View Count */}
-        {isStreaming && (
-          <div className="absolute top-5 left-5 flex items-center gap-2 bg-red-600 text-white px-4 py-1 rounded-full text-sm font-medium shadow-md">
-            <span className="animate-pulse">🔴 Live</span>
-            <span>• {connectedStudents.size} watching</span>
+          {/* Live Badge */}
+          {isStreaming && (
+            <div className="absolute top-3 left-3 flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full shadow-md text-xs md:text-sm">
+              <span className="animate-pulse">🔴 Live</span>
+              <span>• {connectedStudents.size} watching</span>
+            </div>
+          )}
+
+          {/* Controls */}
+          <div className="absolute bottom-3 right-3 flex gap-2">
+            <div
+              onClick={toggleChat}
+              className="bg-yellow-500  cursor-pointer hover:bg-yellow-600 text-white text-xs md:text-sm px-3 py-1 rounded-lg shadow-md transition"
+            >
+              {isChatEnabled ? "Disable Chat" : "Enable Chat"}
+            </div>
+            <div
+              onClick={handleStartStream}
+              className={`text-white text-xs cursor-pointer md:text-sm px-3 py-1 rounded-lg shadow-md transition ${
+                isStreaming
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-green-600 hover:bg-green-700"
+              }`}
+            >
+              {isStreaming ? "Stop Stream" : "Start Stream"}
+            </div>
+            <span
+              onClick={handleMuteToggle}
+              className={`text-white text-xs cursor-pointer md:text-sm px-3 py-1 rounded-lg shadow-md transition ${
+                isMute
+                  ? "bg-gray-500 hover:bg-gray-600"
+                  : "bg-gray-600 hover:bg-gray-700"
+              }`}
+            >
+              {isMute ? "unmute" : "mute"}
+            </span>
+          </div>
+        </div>
+
+        {/* Chat Section */}
+        {isChatEnabled && (
+          <div className="w-full md:w-1/3 h-[260px] md:h-[420px] bg-gray-800 rounded-lg p-3 shadow-inner border border-gray-600 flex flex-col">
+            <h2 className="text-gray-100 font-semibold mb-2 text-sm md:text-base">
+              Live Chat
+            </h2>
+
+            <div
+              ref={chatDivRef}
+              className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar"
+            >
+              {liveCharts.map((c, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-700 px-3 py-1 rounded-md text-sm max-w-[80%]"
+                >
+                  <span className="text-blue-400 font-semibold">{c.from}:</span>{" "}
+                  <span className="text-gray-200">{c.message}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
-
-        {/* Control Buttons */}
-        <div className="absolute bottom-5 right-5 flex gap-3">
-          <button
-            onClick={toggleChat}
-            className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1.5 rounded-lg text-sm shadow-md transition"
-          >
-            {isChatEnabled ? "Disable Chat" : "Enable Chat"}
-          </button>
-          <button
-            onClick={handleStartStream}
-            className={`${
-              isStreaming
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-green-600 hover:bg-green-700"
-            } text-white px-4 py-1.5 rounded-lg text-sm shadow-md transition`}
-          >
-            {isStreaming ? "Stop Stream" : "Start Stream"}
-          </button>
-        </div>
       </div>
-
-      {/* Chat Section */}
-      {isChatEnabled && (
-        <div className="relative flex flex-col mt-10 h-[300px] bg-gray-800 rounded-t-xl p-4 shadow-inner border-t border-gray-500">
-          <h2 className="text-xl font-semibold mb-3 text-gray-200">
-            Live Chat
-          </h2>
-
-          <div
-            ref={chatDivRef}
-            className="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar "
-          >
-            {liveCharts?.map((chats) => (
-              <>
-                <div className="bg-gray-600 px-3 py-1 rounded-sm w-fit max-w-[70%]">
-                  <span className="font-semibold text-sm text-blue-400">
-                    {chats.from}:
-                  </span>{" "}
-                  <span className="font-semibold text-sm text-gray-300">
-                    {chats.message}
-                  </span>
-                </div>
-              </>
-            ))}
-          </div>
-
-          {/* Chat Input - Disabled for instructor */}
-          {/* <form className="mt-3 flex">
-            <input
-              type="text"
-              disabled
-              value={message}
-              onChange={(e) => setmessage(e.target.value)}
-              placeholder="Instructor can't chat..."
-              className="flex-1 bg-gray-200 px-4 py-2 rounded-l-lg text-sm outline-none"
-            />
-            <button
-              disabled
-              style={{ borderRadius: "0px 4px 4px 0px" }}
-              className="bg-gray-400 text-white px-5 py-2 cursor-not-allowed"
-              onClick={handleSendChat}
-            >
-              Send
-            </button>
-          </form> */}
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 

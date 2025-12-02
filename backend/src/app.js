@@ -51,7 +51,7 @@ app.use(passport.session());
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://lms-learning-management-system-blond.vercel.app"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
@@ -70,7 +70,7 @@ app.use("/api/common", commonRoute);
 app.use("/api/course", courseRoute);
 app.use("/api/live-stream", liveStreamRoute)
 
-//------------testing----------------
+//------------ testing ----------------
 app.get("/test", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -80,7 +80,7 @@ app.get("/test", async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-app.get("/webhook",conformPaymentAndEnrollCourse)
+app.get("/webhook", conformPaymentAndEnrollCourse)
 
 //web socket --------
 io.use((socket, next) => {
@@ -110,7 +110,6 @@ io.on("connection", (socket) => {
   })
 
   socket.on("answer", ({ courseId, ans }) => {
-    console.log("answer:", { ans })
     const instructorId = broadcaster.get(courseId)
     if (instructorId) {
       io.to(instructorId).emit("answer", { id: socket.id, answer: ans })
@@ -126,23 +125,29 @@ io.on("connection", (socket) => {
     }
   })
 
+  socket.on("instructor:end-stream", ({ courseId }) => {
+
+    io.to(courseId).emit("stream-ended", {
+      message: "Class ended by Instructor"
+    });
+
+    broadcaster.delete(courseId); // Remove broadcaster reference
+  });
+
+
+
   socket.on("ice-candidate", ({ targetId, candidate }) => {
-    console.log("ice_candidate:", {
-      targetId,
-      candidate
-    })
     io.to(targetId).emit("ice-candidate", {
       candidate,
       fromId: socket.id,
     });
   });
 
-  socket.on("joinChatRoom",(data)=>{
+  socket.on("joinChatRoom", (data) => {
     socket.join(data.courseId)
   })
 
   socket.on("sendChat", (data) => {
-    console.log("messageData:",data)
     socket.to(data.courseId).emit("receiveMessage", { message: data.message, from: data.from })
   })
 
@@ -158,6 +163,5 @@ io.on("connection", (socket) => {
   });
 
 })
-
 
 export { server, io };

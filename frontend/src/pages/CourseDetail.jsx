@@ -8,7 +8,7 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 import FullScreenLoader from "@/components/FullScreenLoader";
 
-function CourseDetail({ course }) {
+function CourseDetail() {
   const { courseId } = useParams();
   const userRole = useSelector((state) => state.user.userRole);
   const user = useSelector((state) => state.user.user);
@@ -46,9 +46,18 @@ function CourseDetail({ course }) {
     }
   }, [cartMessage]);
 
-  const handleAddToCart = () => {
-    dispatch(addToCart({ item: coursedetails, userId: user.id }));
-    console.log("Add to cart clicked for course:");
+  const handleAddToCart = async () => {
+    await axios
+      .post(`${import.meta.env.VITE_API_URL}/api/student/addToCart`, {
+        courseId: courseId,
+      })
+      .then((response) => {
+        dispatch(addToCart({ item: coursedetails, userId: user.id }));
+      })
+      .catch((error) => {
+        toast.message(error.response.data.message);
+        console.log(error);
+      });
   };
 
   if (isLoading) {

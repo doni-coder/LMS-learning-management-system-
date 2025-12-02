@@ -32,6 +32,7 @@ import StreamPage from "./pages/student/StreamPage";
 import InstructorLivePage from "./pages/instructor/InstructorLivePage";
 import EnterOtp from "./pages/EnterOtp";
 import ResetPassword from "./pages/ResetPassword";
+import NoticePopup from "./components/NoticePopup";
 
 function App() {
   const location = useLocation();
@@ -42,16 +43,15 @@ function App() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/auth/current-user`,
-          {
+        await axios
+          .get(`${import.meta.env.VITE_API_URL}/auth/current-user`, {
             withCredentials: true,
-          }
-        );
-        if (response.status === 200) {
-          dispatch(login(response.data.user));
-          dispatch(setUserRole(response.data.user.user_role));
-        }
+          })
+          .then(async (response) => {
+            dispatch(login(response.data.user));
+            dispatch(setUserRole(response.data.user.user_role));
+            console.log("STUDENT ID", response.data.user?.id);
+          });
       } catch (error) {
         console.error("Error fetching user:", error);
       }
@@ -60,18 +60,26 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    const cartItem = localStorage.getItem(`cartItems:${user?.id}`);
-    let cartItems = JSON.parse(cartItem);
-    console.log(user);
-    if (cartItems === null) {
-      cartItems = [];
-    }
-    console.log("cart Items:", cartItems);
-    dispatch(setLocalStorageCartItems(cartItems));
-  }, [user]);
+    if (!user?.id) return;
+    const getCartItem = async () => {
+      await axios
+        .get(`${import.meta.env.VITE_API_URL}/api/student/cart-items`)
+        .then((response) => {
+          console.log("cartItem:", response);
+          dispatch(setLocalStorageCartItems(response.data?.cart));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    getCartItem();
+
+    return () => getCartItem;
+  }, [dispatch, user?.id]);
 
   return (
     <div className="dark:bg-gray-900">
+      <NoticePopup />
       <Navbar isLoggedIn={isLoggedIn} user={user} />
       <div className="pt-[70px]">
         <Routes key={location.pathname}>
@@ -79,8 +87,8 @@ function App() {
           <Route path="/explore" element={<Explore />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/enter-otp" element={<EnterOtp/>} />
-          <Route path="/reset-password" element={<ResetPassword/>} />
+          <Route path="/enter-otp" element={<EnterOtp />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route
             path="/student-dashboard"
             element={
