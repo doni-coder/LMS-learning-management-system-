@@ -5,12 +5,12 @@ export const checkUserRole = async (req, res, next) => {
 
     return req.session.save(() => {
       console.log("➡️ Redirecting to role selection");
-      res.redirect("http://localhost:5173/select-userRole");
+      res.redirect("https://lms-learning-management-system-blond.vercel.app/select-userRole");
     });
   }
 
   return req.session.save(() => {
     console.log("➡️ Redirecting to homepage");
-    res.redirect("http://localhost:5173/");
+    res.redirect("https://lms-learning-management-system-blond.vercel.app/");
   });
 };
