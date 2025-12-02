@@ -34,8 +34,7 @@ const Cart = () => {
   let cartItem;
   const [cartItems, setCartItems] = useState([]);
   useEffect(() => {
-    cartItem = localStorage.getItem(`cartItems:${user?.id}`);
-    setCartItems(JSON.parse(cartItem));
+    setCartItems(cart);
     console.log("cartItem", cart);
   }, [user, cart]);
 
@@ -58,6 +57,7 @@ const Cart = () => {
     }
   }
   const handleCheckout = async () => {
+    console.log(cartItems)
     const response = await axios.post(
       `${import.meta.env.VITE_API_URL}/api/course/course-payment`,
       {
