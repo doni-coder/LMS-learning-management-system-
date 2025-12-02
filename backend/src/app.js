@@ -35,14 +35,18 @@ const io = new Server(server, {
 });
 
 
+const isProduction = process.env.NODE_ENV === "production";
+
+app.set("trust proxy", 1); // 👈 required for secure cookies behind Render proxy
+
 const sessionConfig = session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: true,          // IMPORTANT
-    sameSite: "none",      // IMPORTANT
+    secure: isProduction,                 // only true in prod
+    sameSite: isProduction ? "none" : "lax", // cross-site in prod, normal in dev
     maxAge: 24 * 60 * 60 * 1000,
   },
 });
