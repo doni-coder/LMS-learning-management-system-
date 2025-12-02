@@ -63,7 +63,7 @@ const addToCart = async (req, res) => {
 
   } catch (error) {
     console.error("Add to Cart Error:", error);
-    return res.status(500).json({ message: "internal error" });
+    return res.status(500).json({ message: "internal error",error:error.message });
   }
 };
 
