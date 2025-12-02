@@ -12,7 +12,7 @@ function CourseCard({ course }) {
   const navigate = useNavigate();
   const handleOnclick = () => {
     dispatch(setSingleCourseDetail(course));
-    navigate(`/course-detail`);
+    navigate(`/course-detail/${course.id}`);
   };
 
   return (

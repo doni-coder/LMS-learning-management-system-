@@ -97,7 +97,7 @@ function App() {
               </ProtectedPages>
             }
           />
-          <Route path="/course-detail" element={<CourseDetail />} />
+          <Route path="/course-detail/:courseId" element={<CourseDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/select-userRole" element={<SelectRole />} />
           <Route
