@@ -26,10 +26,14 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
+    origin: [
+      "http://localhost:5173",
+      "https://lms-learning-management-system-blond.vercel.app",
+    ],
+    credentials: true
   },
 });
+
 
 const sessionConfig = session({
   secret: process.env.SESSION_SECRET,
@@ -51,11 +55,15 @@ app.use(passport.session());
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://lms-learning-management-system-blond.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://lms-learning-management-system-blond.vercel.app",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
+
 
 app.post("/webhook", express.raw({ type: "application/json" }), conformPaymentAndEnrollCourse);
 app.use(express.json({ limit: "10mb" }));
