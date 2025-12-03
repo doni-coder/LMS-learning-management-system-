@@ -19,19 +19,16 @@ function Alert({ open, setOpen, email, userRole }) {
       alert("please enter email and userRole");
       return;
     }
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/common/reset-password`,
-      {
+    await axios
+      .post(`${import.meta.env.VITE_API_URL}/api/common/reset-password`, {
         email,
         userRole,
-      }
-    );
-
-    if (response.status == 200) {
-      window.location.href = `/enter-otp/?email=${encodeURIComponent(
-        response.data.email
-      )}&userRole=${encodeURIComponent(response.data.userRole)}`;
-    }
+      })
+      .then((response) => {
+        window.location.href = `/enter-otp/?email=${encodeURIComponent(
+          response.data.email
+        )}&userRole=${encodeURIComponent(response.data.userRole)}`;
+      });
   };
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
