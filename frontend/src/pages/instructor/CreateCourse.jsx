@@ -9,6 +9,7 @@ import { toast } from "sonner";
 axios.defaults.withCredentials = true;
 import { Plus } from "lucide-react";
 import FullScreenLoader from "@/components/FullScreenLoader";
+import FullScreenProcessing from "@/components/FullScreenProcessing";
 
 const CreateCourse = () => {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ const CreateCourse = () => {
   const tempCourse = useSelector((state) => state.course.tempCourse);
   const [step, setStep] = useState(1);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [isProcessing, setProcessing] = useState(false);
   const [tagInput, setTagInput] = useState("");
   const [modulePrefix, setModulePrefix] = useState("");
   const [moduleVideos, setModuleVideos] = useState([]);
@@ -131,7 +133,7 @@ const CreateCourse = () => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("courseId", tempCourse.id);
-    setLoading(true);
+    setProcessing(true);
     stepThreeData.modules.forEach((mod) => {
       formData.append("videos", mod.video);
     });
@@ -139,21 +141,25 @@ const CreateCourse = () => {
     stepThreeData.modules.forEach((mod) => {
       formData.append("title", mod.title);
     });
-    dispatch(setLoading());
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/instructor/upload-content`,
-      formData
-    );
-    if (response.status === 200) {
-      setLoading(false);
-      toast.success("yahoo! course created");
-    } else {
-      setLoading(false);
-    }
+    await axios
+      .post(
+        `${import.meta.env.VITE_API_URL}/api/instructor/upload-content`,
+        formData
+      )
+      .then((response) => {
+        setProcessing(false);
+        toast.success("yahoo! course created");
+      })
+      .catch((error) => {
+        setProcessing(false);
+        toast.error("unable to create 😭");
+      });
   };
 
   if (isLoading) {
     return <FullScreenLoader />;
+  } else if (isProcessing) {
+    return <FullScreenProcessing />;
   } else {
     return (
       <div className="max-w-3xl mx-auto p-6 rounded-2xl dark:bg-gray-900 dark:text-white bg-white  pt-10">
@@ -320,39 +326,39 @@ const CreateCourse = () => {
                       Add module
                     </div>
                   </div>
-                  <div>
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={handleSubmit}
-                      className="bg-blue-600 text-white px-4 text-center mt-3 w-full py-2 rounded hover:bg-blue-700 cursor-pointer"
-                    >
-                      Create course
-                    </div>
-                  </div>
                 </div>
 
                 {/* Modules Preview */}
                 {stepThreeData.modules.length > 0 && (
                   <div className="mt-6">
-                    <h4 className="font-semibold mb-2 text-gray-800">
+                    <h4 className="font-semibold mb-2 text-gray-300">
                       Preview Modules
                     </h4>
                     <ul className="space-y-3">
                       {stepThreeData.modules.map((mod, index) => (
                         <li
                           key={index}
-                          className="bg-gray-100 p-3 rounded shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between"
+                          className="dark:bg-gray-700 p-3 rounded shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between"
                         >
                           <div>
                             <p className="font-semibold">{mod.title}</p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-gray-400">
                               {mod.video?.name}
                             </p>
                           </div>
                         </li>
                       ))}
                     </ul>
+                    <div className="mt-5">
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={handleSubmit}
+                        className="bg-blue-600 text-white px-4 text-center mt-3 w-full py-2 rounded hover:bg-blue-700 cursor-pointer"
+                      >
+                        Create course
+                      </div>
+                    </div>
                   </div>
                 )}
               </>

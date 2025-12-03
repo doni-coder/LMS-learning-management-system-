@@ -85,7 +85,7 @@ function DraftCourse() {
               <div>
                 <h3 className="text-lg font-semibold">{course.title}</h3>
                 <p className="text-gray-300 text-sm mt-1">
-                  {course.description}
+                  {course.description?.slice(0,100) + ".."}
                 </p>
               </div>
               <button

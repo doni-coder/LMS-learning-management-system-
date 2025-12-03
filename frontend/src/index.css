@@ -185,6 +185,16 @@ button:focus-visible {
   }
 }
 
+@keyframes loaderBarAni {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-loaderBar {
+  animation: loaderBarAni 1.2s infinite linear;
+}
+
+
 
 .backround{
   color: rgba(0, 0, 0, 0.486);

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useRef } from "react";
-axios.defaults.withCredentials = true
+axios.defaults.withCredentials = true;
 
 function EnterOtp({ length = 4, onComplete }) {
   const [otp, setOtp] = useState(Array(length).fill(""));
@@ -33,21 +33,19 @@ function EnterOtp({ length = 4, onComplete }) {
   };
 
   const submitOtp = async () => {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/common/validate-otp`,
-      {
+    await axios
+      .post(`${import.meta.env.VITE_API_URL}/api/common/validate-otp`, {
         email,
         otp,
         userRole,
-      }
-    );
-    if (response.status === 200) {
-      window.location.href = `/reset-password/?email=${encodeURIComponent(
-        response.data.email
-      )}&userRole=${encodeURIComponent(
-        response.data.userRole
-      )}&otp=${encodeURIComponent(response.data.otp)}`;
-    }
+      })
+      .then((response) => {
+        window.location.href = `/reset-password/?email=${encodeURIComponent(
+          response.data.email
+        )}&userRole=${encodeURIComponent(
+          response.data.userRole
+        )}&otp=${encodeURIComponent(response.data.otp)}`;
+      });
   };
 
   return (
@@ -79,7 +77,11 @@ function EnterOtp({ length = 4, onComplete }) {
           />
         ))}
       </div>
-      <button onClick={submitOtp}>Submit</button>
+      <div className="w-full flex mt-5 justify-center">
+        <button style={{ width: "100px" }} onClick={submitOtp}>
+          Submit
+        </button>
+      </div>
     </div>
   );
 }
