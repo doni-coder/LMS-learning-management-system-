@@ -27,7 +27,7 @@ const coursePayment = async (req, res) => {
       quantity: 1,
     }));
 
-    console.log("lineitems",lineItems)
+    console.log("lineitems", lineItems)
 
     const session = await stripe.checkout.sessions.create({
       line_items: lineItems,

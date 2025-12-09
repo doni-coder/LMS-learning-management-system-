@@ -71,7 +71,7 @@ function CourseDetail() {
           <img
             src={coursedetails?.thumbnail}
             alt="Course Thumbnail"
-            className="w-full md:w-5/10 rounded-lg shadow"
+            className="w-full md:w-5/10 md:h-auto h-[350px] rounded-lg shadow"
           />
 
           <div className="flex-1">
