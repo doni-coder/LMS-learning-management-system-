@@ -33,7 +33,9 @@ function PublishedCourseCard({ course, courseId }) {
       />
       <div className="flex-1">
         <h3 className="text-lg font-semibold">{course.title}</h3>
-        <p className="text-gray-400 text-sm mt-1">{course.description}</p>
+        <p className="text-gray-400 text-sm mt-1">
+          {course.description?.slice(0, 100)}...
+        </p>
         <div className="mt-3">
           <p className="text-blue-600 font-semibold">₹{course.price}</p>
           <p className="text-gray-500 text-sm">

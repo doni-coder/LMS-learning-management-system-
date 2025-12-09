@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 import { Toaster } from "@/components/ui/sonner";
@@ -75,11 +74,11 @@ function CreatedCourse() {
                     <h3 className="text-lg font-semibold">{course?.title}</h3>
                     <p className="text-gray-600">{course?.description}</p>
                   </div>
-                  <div className="p-4 bg-gray-100 flex justify-between items-center">
+                  <div className="p-4 dark:bg-gray-800 flex justify-between items-center">
                     <button
                       onClick={() => handlePublish(course?.id)}
                       style={{ backgroundColor: "#646eff" }}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full"
+                      className="bg-blue-900 text-white px-4 py-2 rounded-md hover:bg-blue-800 w-full"
                     >
                       Publish
                     </button>

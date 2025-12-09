@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function ProtectedPages({ children }) {
-  const isLoggedIn = true;
+  const isLoggedIn = useSelector((state) => state.user.isAuthenticated);
   const navigate = useNavigate();
-  console.log(isLoggedIn);
-
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/login");
