@@ -93,7 +93,7 @@ const conformPaymentAndEnrollCourse = async (req, res) => {
         );
       }
 
-      await client.query(
+      await pool.query(
         "DELETE FROM STUDENT_CART WHERE student_id = $1",
         [studentId]
       );
