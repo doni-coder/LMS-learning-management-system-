@@ -124,22 +124,8 @@ function App() {
               </ProtectedPages>
             }
           />
-          <Route
-            path="/payment-success"
-            element={
-              <ProtectedPages>
-                <PaymentSuccess />
-              </ProtectedPages>
-            }
-          />
-          <Route
-            path="/payment-cancel"
-            element={
-              <ProtectedPages>
-                <PaymentCancel />
-              </ProtectedPages>
-            }
-          />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-cancel" element={<PaymentCancel />} />
           <Route
             path="/live-class/:id"
             element={
