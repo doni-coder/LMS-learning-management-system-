@@ -17,6 +17,15 @@ function CourseDetail() {
   const [isLoading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
+  // --- Added for Read More / Read Less ---
+  const [showFullDesc, setShowFullDesc] = useState(false);
+
+  const getShortDescription = (text) => {
+    if (!text) return "";
+    if (text.length <= 150) return text;
+    return text.slice(0, 150) + "...";
+  };
+
   useEffect(() => {
     setLoading(true);
     const courseDetail = async () => {
@@ -27,7 +36,6 @@ function CourseDetail() {
           }/api/course/get-single-course-detail/${courseId}`
         )
         .then((response) => {
-          console.log("response", response.data);
           setCourseDetail(response.data?.course);
           setLoading(false);
         })
@@ -39,7 +47,6 @@ function CourseDetail() {
   }, [courseId]);
 
   useEffect(() => {
-    console.log("cart message", cartMessage);
     if (cartMessage) {
       toast.message(cartMessage);
       dispatch(setCartMessage(null));
@@ -56,7 +63,6 @@ function CourseDetail() {
       })
       .catch((error) => {
         toast.message(error.response.data.message);
-        console.log(error);
       });
   };
 
@@ -65,18 +71,37 @@ function CourseDetail() {
   } else {
     return (
       <div className="max-w-5xl text-white mx-auto p-6 rounded mt-6">
-        {/* Course Header */}
         <Toaster position="top-center" />
+
+        {/* Course Header */}
         <div className="flex flex-col md:flex-row gap-6">
           <img
             src={coursedetails?.thumbnail}
             alt="Course Thumbnail"
-            className="w-full md:w-5/10 md:h-auto h-[350px] rounded-lg shadow"
+            className="w-full md:w-5/10 h-6/12 rounded-lg shadow"
           />
 
           <div className="flex-1">
             <h1 className="text-3xl font-bold">{coursedetails?.title}</h1>
-            <p className="text-gray-400 mt-2">{coursedetails?.description}</p>
+
+            {/* -------- DESCRIPTION WITH READ MORE -------- */}
+            <div className="mt-2 text-gray-400">
+              <p>
+                {showFullDesc
+                  ? coursedetails?.description
+                  : getShortDescription(coursedetails?.description)}
+              </p>
+
+              {coursedetails?.description?.length > 150 && (
+                <span
+                  onClick={() => setShowFullDesc(!showFullDesc)}
+                  className="text-blue-400 cursor-pointer mt-1 underline"
+                >
+                  {showFullDesc ? "Read Less" : "Read More"}
+                </span>
+              )}
+            </div>
+
             <p className="text-lg font-semibold mt-4 text-green-600">
               ₹{coursedetails.price}
             </p>
@@ -146,9 +171,9 @@ function CourseDetail() {
           <div className="space-y-4 mt-3">
             {coursedetails.reviews?.length > 0 ? (
               coursedetails.reviews?.map((review) => (
-                <div key={review.id} className="p-4 bg-gray-100 rounded">
+                <div key={review.id} className="p-4 dark:bg-gray-800 rounded">
                   <p className="text-sm text-gray-800">⭐ {review.points}/5</p>
-                  <p className="text-gray-600">{review.review}</p>
+                  <p className="text-gray-200">{review.review}</p>
                   <p className="text-xs text-gray-400">
                     Student ID: {review.student_id}
                   </p>
