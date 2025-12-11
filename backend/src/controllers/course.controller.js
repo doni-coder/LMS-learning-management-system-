@@ -91,13 +91,12 @@ const conformPaymentAndEnrollCourse = async (req, res) => {
           "INSERT INTO COURSES_PROGRESS (id, student_id, enrolled_course) VALUES ($1, $2, $3)",
           [progressId, studentId, enrolledId]
         );
-
-        await pool.query(
-          "delete from STUDENT_CART where student_id = $1", [studentId]
-        )
-
-
       }
+
+      await client.query(
+        "DELETE FROM STUDENT_CART WHERE student_id = $1",
+        [studentId]
+      );
 
       console.log("🎉 All Courses Enrolled and Progress Initialized Successfully for Student:", studentId);
     } catch (dbError) {

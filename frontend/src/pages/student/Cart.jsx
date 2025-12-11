@@ -57,7 +57,7 @@ const Cart = () => {
     }
   }
   const handleCheckout = async () => {
-    console.log(cartItems)
+    console.log(cartItems);
     const response = await axios.post(
       `${import.meta.env.VITE_API_URL}/api/course/course-payment`,
       {
@@ -74,14 +74,13 @@ const Cart = () => {
 
   const handleRemove = async (id) => {
     console.log("course id:", id);
-    await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/student/removeFromCart`,
-      {
+    await axios
+      .post(`${import.meta.env.VITE_API_URL}/api/student/removeFromCart`, {
         courseId: id,
-      }
-    ).then((response)=>{
-      dispatch(removeFromCart({ userId: user?.id, courseId: id }));
-    })
+      })
+      .then((response) => {
+        dispatch(removeFromCart({ userId: user?.id, courseId: id }));
+      });
     // Add remove logic (Redux, context, or backend call)
   };
 
