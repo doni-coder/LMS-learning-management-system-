@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 function CreatedCourse() {
   const [courses, setCourses] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const { instructorName } = useSelector((state) => state.user.user);
+  const { name } = useSelector((state) => state.user.user);
   const resetCourses = (id) => {
     const course = courses.filter((course) => course.id !== id);
     console.log("resetCourses", course);
@@ -39,15 +39,20 @@ function CreatedCourse() {
 
   const handlePublish = async (courseId) => {
     setLoading(true);
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/instructor/publish-course/`,
-      { courseId, instructorName }
-    );
-    if (response.status === 200) {
-      resetCourses(courseId);
-      setLoading(false);
-      toast.success("Course published successfully!");
-    }
+    // console.log("instructorName",instructorName)
+    axios
+      .post(`${import.meta.env.VITE_API_URL}/api/instructor/publish-course/`, {
+        courseId,
+        instructorName:name,
+      })
+      .then(() => {
+        resetCourses(courseId);
+        setLoading(false);
+        toast.success("Course published successfully!");
+      })
+      .catch((error) => {
+        setLoading(false);
+      });
   };
 
   if (isLoading) {

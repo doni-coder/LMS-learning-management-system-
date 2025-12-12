@@ -10,7 +10,6 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-console.log(process.env.EMAIL_USER)
 
 const sendEmailToStudent = async (to, subject, text) => {
     try {

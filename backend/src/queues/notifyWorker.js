@@ -8,7 +8,8 @@ export const notifyWorker = new Worker(
         console.log("Worker received job:", job.id);
 
         const { students, courseName, instructorName } = job.data;
-
+        console.log("emailStudents:", students)
+        console.log("jobs:", job.data)
         for (const s of students) {
             await sendEmailToStudent(
                 s.email,

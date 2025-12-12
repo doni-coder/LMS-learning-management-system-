@@ -336,10 +336,10 @@ const publishCourse = async (req, res) => {
   try {
     const { courseId, instructorName } = req.body;
     const instructorId = req.user?.id
-    console.log("courseId:", courseId);
-    if (!courseId) {
+    console.log("instructorName:", instructorName);
+    if (!courseId || !instructorName) {
       return res.status(400).json({
-        message: "Course ID is required",
+        message: "credential is required",
       });
     }
     const course = await pool.query(
@@ -371,7 +371,7 @@ const publishCourse = async (req, res) => {
       await notifyQueue.add("sendEmailNotification", {
         students: studentsOfInstructor.rows,
         courseName: courseTitle,
-        instructorName
+        instructorName:instructorName
       })
     }
 
