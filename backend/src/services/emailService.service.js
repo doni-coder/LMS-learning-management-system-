@@ -1,4 +1,6 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv"
+dotenv.config()
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -7,6 +9,8 @@ const transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASS,
     },
 });
+
+console.log(process.env.EMAIL_USER)
 
 const sendEmailToStudent = async (to, subject, text) => {
     try {
