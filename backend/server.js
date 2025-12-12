@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
 import { server } from "./src/app.js";
 import { connectDB } from "./src/db/noSql.db.js";
+import "./src/queues/notifyWorker.js"
 
 connectDB()
   .then(() => {
