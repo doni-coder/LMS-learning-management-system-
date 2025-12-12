@@ -4,11 +4,12 @@ axios.defaults.withCredentials = true;
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import FullScreenLoader from "@/components/FullScreenLoader";
+import { useSelector } from "react-redux";
 
 function CreatedCourse() {
   const [courses, setCourses] = useState([]);
   const [isLoading, setLoading] = useState(false);
-
+  const { instructorName } = useSelector((state) => state.user.user);
   const resetCourses = (id) => {
     const course = courses.filter((course) => course.id !== id);
     console.log("resetCourses", course);
@@ -17,7 +18,6 @@ function CreatedCourse() {
 
   useEffect(() => {
     setLoading(true);
-    console.log(courses.length);
     const fetchCourses = async () => {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/instructor/created-course`
@@ -41,7 +41,7 @@ function CreatedCourse() {
     setLoading(true);
     const response = await axios.post(
       `${import.meta.env.VITE_API_URL}/api/instructor/publish-course/`,
-      { courseId }
+      { courseId, instructorName }
     );
     if (response.status === 200) {
       resetCourses(courseId);

@@ -78,79 +78,81 @@ function App() {
   }, [dispatch, user?.id]);
 
   return (
-    <div className="dark:bg-gray-900">
-      <NoticePopup />
+    <>
       <Navbar isLoggedIn={isLoggedIn} user={user} />
-      <div className="pt-[70px]">
-        <Routes key={location.pathname}>
-          <Route path="/" element={<Home />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/enter-otp" element={<EnterOtp />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route
-            path="/student-dashboard"
-            element={
-              <ProtectedPages>
-                <Student />
-              </ProtectedPages>
-            }
-          />
-          <Route
-            path="/instructor-dashboard"
-            element={
-              <ProtectedPages>
-                <Instructor />
-              </ProtectedPages>
-            }
-          />
-          <Route path="/course-detail/:courseId" element={<CourseDetail />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/select-userRole" element={<SelectRole />} />
-          <Route
-            path="/course-content/:courseId"
-            element={
-              <ProtectedPages>
-                <CourseContent />
-              </ProtectedPages>
-            }
-          />
-          <Route
-            path="/edit-course/:id"
-            element={
-              <ProtectedPages>
-                <EditDraftCourse />
-              </ProtectedPages>
-            }
-          />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/payment-cancel" element={<PaymentCancel />} />
-          <Route
-            path="/live-class/:id"
-            element={
-              <ProtectedPages>
-                <StreamPage />
-              </ProtectedPages>
-            }
-          />
-          <Route
-            path="/start-live/:courseId"
-            element={
-              <ProtectedPages>
-                <InstructorLivePage />
-              </ProtectedPages>
-            }
-          />
-          <Route path="/edit-student-detail" element={<StudentInfo />} />
-          <Route
-            path="/edit-instructor-detail"
-            element={<InstructorDetails />}
-          />
-        </Routes>
+      <div className="dark:bg-gray-900">
+        <NoticePopup />
+        <div className="pt-[70px]">
+          <Routes key={location.pathname}>
+            <Route path="/" element={<Home />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/enter-otp" element={<EnterOtp />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route
+              path="/student-dashboard"
+              element={
+                <ProtectedPages>
+                  <Student />
+                </ProtectedPages>
+              }
+            />
+            <Route
+              path="/instructor-dashboard"
+              element={
+                <ProtectedPages>
+                  <Instructor />
+                </ProtectedPages>
+              }
+            />
+            <Route path="/course-detail/:courseId" element={<CourseDetail />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/select-userRole" element={<SelectRole />} />
+            <Route
+              path="/course-content/:courseId"
+              element={
+                <ProtectedPages>
+                  <CourseContent />
+                </ProtectedPages>
+              }
+            />
+            <Route
+              path="/edit-course/:id"
+              element={
+                <ProtectedPages>
+                  <EditDraftCourse />
+                </ProtectedPages>
+              }
+            />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/payment-cancel" element={<PaymentCancel />} />
+            <Route
+              path="/live-class/:id"
+              element={
+                <ProtectedPages>
+                  <StreamPage />
+                </ProtectedPages>
+              }
+            />
+            <Route
+              path="/start-live/:courseId"
+              element={
+                <ProtectedPages>
+                  <InstructorLivePage />
+                </ProtectedPages>
+              }
+            />
+            <Route path="/edit-student-detail" element={<StudentInfo />} />
+            <Route
+              path="/edit-instructor-detail"
+              element={<InstructorDetails />}
+            />
+          </Routes>
+        </div>
       </div>
       <Footer />
-    </div>
+    </>
   );
 }
 

@@ -6,6 +6,7 @@ import {
 } from "../services/cloudinary.service.js";
 import { CourseContent } from "../models/course.models.js";
 import { uploadVideoToCloudinary } from "../services/UploadVideoToS3.service.js";
+import { notifyQueue } from "../queues/notifyQueue.js"
 
 const registerInstructorDetails = async (req, res) => {
   try {
@@ -150,26 +151,6 @@ const uploadCourseContent = async (req, res) => {
       });
     }
     console.log("uploadedVideos:", uploadedVideos);
-
-    // const contents = uploadedVideos.map((_, index) => ({
-    //   title: `${title}`,
-    //   videoUrl: null, // initially null if processing
-    //   status: "processing",
-    //   duration: null,
-    //   serialNo: `${index + 1}`,
-    // }));
-
-    // if (!createdCourseContent) {
-    //   return res.status(500).json({
-    //     message: "Failed to create course content.",
-    //   });
-    // }
-
-    // await pushNotification({
-    //   clientId: req.user.id,
-    //   title,
-    //   status: `${videoFiles.length} video(s) processing`,
-    // });
 
     return res.status(200).json({
       message: `${videoFiles.length} video(s) uploaded and processing.`,
@@ -353,7 +334,8 @@ const getCreatedCourse = async (req, res) => {
 
 const publishCourse = async (req, res) => {
   try {
-    const { courseId } = req.body;
+    const { courseId, instructorName } = req.body;
+    const instructorId = req.user?.id
     console.log("courseId:", courseId);
     if (!courseId) {
       return res.status(400).json({
@@ -361,7 +343,7 @@ const publishCourse = async (req, res) => {
       });
     }
     const course = await pool.query(
-      `UPDATE COURSES SET IS_PUBLISHED = $1 WHERE ID = $2 AND INSTRUCTOR_ID = $3`,
+      `UPDATE COURSES SET IS_PUBLISHED = $1 WHERE ID = $2 AND INSTRUCTOR_ID = $3 RETURNING *`,
       [true, courseId, req.user.id]
     );
     console.log("course:", course);
@@ -370,6 +352,30 @@ const publishCourse = async (req, res) => {
         message: "Course not found or already published",
       });
     }
+
+    const courseTitle = course.rows[0]?.title
+
+    // start gmail automation queue work
+
+    const studentsOfInstructor = await pool.query(
+      `
+        SELECT DISTINCT s.id, s.name, s.email
+        FROM students s
+        JOIN enrolled_courses ec ON ec.student_id = s.id
+        JOIN courses c ON c.id = ec.course_id
+        WHERE c.instructor_id = $1
+      `, [instructorId]
+    )
+
+    if (studentsOfInstructor.rowCount > 0) {
+      await notifyQueue.add("sendEmailNotification", {
+        students: studentsOfInstructor.rows,
+        courseName: courseTitle,
+        instructorName
+      })
+    }
+
+
     return res.status(200).json({
       message: "Course published successfully",
     });

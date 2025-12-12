@@ -15,7 +15,7 @@ const Instructor = () => {
   const [activeTab, setActiveTab] = useState("create");
 
   return (
-    <div className="h-screen dark:bg-gray-950">
+    <div className=" dark:bg-gray-950">
       
       {/* Sticky Tab Bar */}
       <div className="top-0 z-50 backdrop-blur-md  dark:bg-gray-900/70 shadow-sm">

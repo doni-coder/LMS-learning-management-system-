@@ -77,7 +77,7 @@ const Navbar = ({ isLoggedIn = false, user }) => {
                     style={{
                       backgroundImage: `url(${user?.profile_pic})`,
                     }}
-                    className="md:w-[45px] md:h-[45px] bg-cover bg-center w-[40px] h-[40px] rounded-full"
+                    className="md:w-[35px] md:h-[35px] bg-cover bg-center w-[35px] h-[35px] rounded-full"
                   ></div>
                 </DialogTrigger>
                 <DialogContent className={"[&>button]:text-white"}>

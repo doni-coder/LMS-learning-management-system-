@@ -7,12 +7,12 @@ const Footer = () => {
         {/* Section 1: Logo & Description */}
         <div>
           <div className="md:w-[110px] w-[100px]">
-          <img
-            className="w-full"
-            src="https://freelogopng.com/images/all_img/1683006915udemy-logo-white.png"
-            alt=""
-          />
-        </div>
+            <img
+              className="w-full"
+              src="https://freelogopng.com/images/all_img/1683006915udemy-logo-white.png"
+              alt=""
+            />
+          </div>
           <p className="text-gray-400 mt-2">
             Learn at your own pace with expert-created courses for all levels.
           </p>
