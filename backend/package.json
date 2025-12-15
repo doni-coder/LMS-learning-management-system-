@@ -17,6 +17,7 @@
     "@aws-sdk/client-sqs": "^3.831.0",
     "@azure/identity": "^4.13.0",
     "@azure/storage-blob": "^12.29.1",
+    "@getbrevo/brevo": "^3.0.1",
     "bcrypt": "^5.1.1",
     "bullmq": "^5.66.0",
     "cloudinary": "^2.6.0",

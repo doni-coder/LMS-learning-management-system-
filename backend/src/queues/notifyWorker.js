@@ -12,9 +12,11 @@ export const notifyWorker = new Worker(
         console.log("jobs:", job.data)
         for (const s of students) {
             await sendEmailToStudent(
-                s.email,
-                `New Course: ${courseName}`,
-                `Hi ${s.name}, a new course by ${instructorName} is now live!`
+                {
+                    toEmail:s.email,
+                    courseName:courseName,
+                    instructorName:instructorName
+                }
             );
         }
     },
