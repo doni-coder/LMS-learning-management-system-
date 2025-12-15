@@ -64,6 +64,38 @@ export default function Login() {
       ) : (
         <></>
       )}
+      <div className="bg-cyan-950 flex flex-col justify-center items-center pt-6 pb-2">
+        <h3 className="text-center ">Copy guest credentials</h3>
+        <div className="w-[350px] mt-3 flex gap-5">
+          <div>
+            <span className="text-yellow-500">For Student :</span>{" "}
+            <button
+              onClick={() => {
+                setEmail("test-1@gmail.com");
+                setPassword("123456");
+                setRole("student")
+                
+              }}
+              style={{ backgroundColor: "gray", padding: "2px 10px" }}
+            >
+              copy
+            </button>
+          </div>
+          <div>
+            <span className="text-green-500">For Instructor : </span>
+            <button
+              onClick={() => {
+                setEmail("test-2@gmail.com");
+                setPassword("123456");
+                setRole("instructor")
+              }}
+              style={{ backgroundColor: "gray", padding: "2px 10px" }}
+            >
+              copy
+            </button>
+          </div>
+        </div>
+      </div>
       <div className="md:flex flex justify-center">
         <Toaster position="top-center" />
         <div className="px-8 md:px-0">

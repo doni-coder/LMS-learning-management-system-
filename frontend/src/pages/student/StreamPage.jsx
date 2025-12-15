@@ -13,16 +13,13 @@ function StreamPage() {
   const [message, setmessage] = useState("");
   const { id } = useParams();
 
-
   const handleMessageReceive = useCallback((data) => {
     setLiveCharts((prev) => {
-
       if (prev.length >= 10) {
         return [data];
       }
       return [...prev, data];
     });
-
   }, []);
 
   const handleSendMessage = () => {

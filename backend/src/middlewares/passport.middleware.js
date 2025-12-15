@@ -91,7 +91,7 @@ const usePassportGoogle = () => {
             `SELECT * FROM students WHERE AUTH_ID = $1;`,
             [profile.id]
           );
-          
+
           if (result.rows.length > 0) {
             console.log(true);
             console.log("User found in students table:", result.rows[0]);
