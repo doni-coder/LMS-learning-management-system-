@@ -64,7 +64,7 @@ export default function Login() {
       ) : (
         <></>
       )}
-      <div className="bg-cyan-950 flex flex-col justify-center items-center pt-6 pb-2">
+      <div className="bg-gray-800 flex flex-col justify-center items-center pt-6 pb-3">
         <h3 className="text-center ">Copy guest credentials</h3>
         <div className="w-[350px] mt-3 flex gap-5">
           <div>
@@ -99,7 +99,7 @@ export default function Login() {
       <div className="md:flex flex justify-center">
         <Toaster position="top-center" />
         <div className="px-8 md:px-0">
-          <div className="py-8 px-0 w-full max-w-md">
+          <div className="py-4 px-0 w-full max-w-md">
             <h2 className="text-3xl font-bold text-center mb-6 text-gray-300">
               Login
             </h2>
