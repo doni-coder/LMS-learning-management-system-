@@ -67,9 +67,6 @@ const Cart = () => {
     const stripe = await stripePromise;
 
     await stripe.redirectToCheckout({ sessionId: response.data.sessionId });
-    // if (response.status == 200) {
-    //   navigate(`/checkout/${response.data.sessionId}`);
-    // }
   };
 
   const handleRemove = async (id) => {
@@ -81,7 +78,6 @@ const Cart = () => {
       .then((response) => {
         dispatch(removeFromCart({ userId: user?.id, courseId: id }));
       });
-    // Add remove logic (Redux, context, or backend call)
   };
 
   return (

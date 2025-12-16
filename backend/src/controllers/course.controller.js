@@ -9,7 +9,7 @@ const endPointSecret = process.env.STRIPE_LOCAL_WEBHOOK;
 const coursePayment = async (req, res) => {
   try {
     const { courseItems } = req.body;
-    const studentId = req.user.id; // Destructure directly
+    const studentId = req.user.id;
     console.log("courseItems:", courseItems)
     const courseItemsInJson = JSON.parse(courseItems);
     const courseIds = courseItemsInJson.map((items) => items.id);
@@ -54,39 +54,29 @@ const coursePayment = async (req, res) => {
 const conformPaymentAndEnrollCourse = async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
-  console.log("\n======= NEW WEBHOOK EVENT =======");
-
   let event;
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endPointSecret);
-    console.log("➡️ Event type received:", event.type);
   } catch (err) {
-    console.error("❌ Webhook Signature Error:", err);
+    console.error("Webhook Signature Error:", err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   if (event.type === "checkout.session.completed") {
-    console.log("✅ Processing checkout.session.completed");
-
     const session = event.data.object;
     const studentId = session.metadata.studentId;
     const courseIds = JSON.parse(session.metadata.courseIds);
-
-    console.log(`👤 Student ID: ${studentId}`);
-    console.log(`📚 Course IDs: ${courseIds}`);
 
     try {
       for (const courseId of courseIds) {
         const enrolledId = generateUuid();
         const progressId = generateUuid();
 
-        console.log(`📝 Inserting into ENROLLED_COURSES - ID: ${enrolledId}, Course ID: ${courseId}`);
         await pool.query(
           "INSERT INTO ENROLLED_COURSES (id, student_id, course_id) VALUES ($1, $2, $3)",
           [enrolledId, studentId, courseId]
         );
 
-        console.log(`📝 Inserting into COURSES_PROGRESS - ID: ${progressId}, Enrolled Course ID: ${enrolledId}`);
         await pool.query(
           "INSERT INTO COURSES_PROGRESS (id, student_id, enrolled_course) VALUES ($1, $2, $3)",
           [progressId, studentId, enrolledId]
@@ -97,17 +87,13 @@ const conformPaymentAndEnrollCourse = async (req, res) => {
         "DELETE FROM STUDENT_CART WHERE student_id = $1",
         [studentId]
       );
-
-      console.log("🎉 All Courses Enrolled and Progress Initialized Successfully for Student:", studentId);
     } catch (dbError) {
-      console.error("❌ Database Error:", dbError);
       return res.status(500).send("Database error occurred.");
     }
   } else {
-    console.log(`⚠️ Ignoring event type: ${event.type}`);
+    console.log(`Ignoring event type: ${event.type}`);
   }
 
-  console.log("======= END OF EVENT =======\n");
   res.status(200).send("Event received");
 };
 
@@ -162,7 +148,6 @@ const getEnrolledCourse = async (req, res) => {
        ER.STUDENT_ID = $1;`,
       [userId]
     );
-    console.log("enrolled:", enrolledCourse.rows);
 
     if (enrolledCourse.rows.length == 0) {
       return res.status(200).json({
