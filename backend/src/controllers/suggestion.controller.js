@@ -2,15 +2,33 @@ import { pool } from "../db/sql.db.js";
 
 const suggestPagenatedCourses = async (req, res) => {
   try {
-    //with pagenation
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-    let courseMap = {};
-    console.log("page", req.query.page);
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.min(Number(req.query.limit) || 10, 50);
+    const offset = (page - 1) * limit;
 
-    const allCourses = await pool.query(
-      ` SELECT 
+    
+    const totalResult = await pool.query(
+      `SELECT COUNT(*) FROM COURSES WHERE IS_PUBLISHED = TRUE`
+    );
+    const totalCourses = Number(totalResult.rows[0].count);
+
+    if (!totalCourses) {
+      return res.status(200).json({
+        message: "No courses available",
+        courses: [],
+      });
+    }
+
+    const coursesResult = await pool.query(
+      `
+      WITH paginated_courses AS (
+        SELECT ID
+        FROM COURSES
+        WHERE IS_PUBLISHED = TRUE
+        ORDER BY CREATED_DATE DESC, ID
+        LIMIT $1 OFFSET $2
+      )
+      SELECT
         C.ID AS COURSE_ID,
         C.TITLE,
         C.THUMBNAIL,
@@ -31,24 +49,22 @@ const suggestPagenatedCourses = async (req, res) => {
         R.REVIEW,
         R.POINTS,
 
-        CT.ID AS TAGS_ID,
         CT.TAGS
-
-        FROM COURSES C
-        LEFT JOIN INSTRUCTOR I ON I.ID = C.INSTRUCTOR_ID
-        LEFT JOIN REVIEWS R ON R.COURSE_ID = C.ID
-        LEFT JOIN COURSES_TAGS CT ON CT.COURSE_ID = C.ID
-        WHERE C.IS_PUBLISHED = TRUE
-        ORDER BY C.CREATED_DATE
-        LIMIT $1 OFFSET $2
+      FROM paginated_courses PC
+      JOIN COURSES C ON C.ID = PC.ID
+      LEFT JOIN INSTRUCTOR I ON I.ID = C.INSTRUCTOR_ID
+      LEFT JOIN REVIEWS R ON R.COURSE_ID = C.ID
+      LEFT JOIN COURSES_TAGS CT ON CT.COURSE_ID = C.ID
+      ORDER BY C.CREATED_DATE DESC, C.ID
       `,
-      [limit, skip]
+      [limit, offset]
     );
 
-    console.log("allCourses.rows;", allCourses.rows);
+    const courseMap = {};
 
-    allCourses.rows.forEach((row) => {
+    for (const row of coursesResult.rows) {
       const courseId = row.course_id;
+
       if (!courseMap[courseId]) {
         courseMap[courseId] = {
           id: row.course_id,
@@ -70,11 +86,13 @@ const suggestPagenatedCourses = async (req, res) => {
           tags: [],
         };
       }
-      console.log("row.review_id", row.review_id)
+
+      /* Reviews */
       if (row.review_id) {
-        const isInclude = courseMap[courseId].reviews.some((review) => review.id === row.review_id)
-        console.log("isInclude", isInclude)
-        if (!isInclude) {
+        const exists = courseMap[courseId].reviews.some(
+          (r) => r.id === row.review_id
+        );
+        if (!exists) {
           courseMap[courseId].reviews.push({
             id: row.review_id,
             student_id: row.student_id,
@@ -82,31 +100,34 @@ const suggestPagenatedCourses = async (req, res) => {
             points: row.points,
           });
         }
-
       }
-      if (row.tags_id) {
-        const isInclude = courseMap[courseId].tags?.includes(row.tags)
-        if (!isInclude) {
+
+      if (row.tags) {
+        if (!courseMap[courseId].tags.includes(row.tags)) {
           courseMap[courseId].tags.push(row.tags);
         }
       }
-    });
-
-    let formatedCourse = Object.values(courseMap);
-    console.log("formatedCourse:", formatedCourse)
-    if (!formatedCourse.length)
-      return res.status(200).json({ message: "no ccoursses available" });
+    }
+    
     return res.status(200).json({
-      message: "courses fetched",
-      courses: formatedCourse,
+      message: "Courses fetched successfully",
+      pagination: {
+        totalCourses,
+        currentPage: page,
+        totalPages: Math.ceil(totalCourses / limit),
+        limit,
+      },
+      courses: Object.values(courseMap),
     });
   } catch (error) {
+    console.error("Pagination Error:", error);
     return res.status(500).json({
-      message: "something went wrong",
+      message: "Something went wrong",
       error: error.message,
     });
   }
 };
+
 
 
 const getSingleCourseDetail = async (req, res) => {

@@ -124,7 +124,7 @@ const usePassportGoogle = () => {
 
 passport.serializeUser((user, done) => {
   const role = user.user_role || user.role || null;
-  console.log("✅ Serializing user:", { id: user.id, userRole: role });
+  console.log("Serializing user:", { id: user.id, userRole: role });
   done(null, { id: user.id, userRole: role });
 });
 
