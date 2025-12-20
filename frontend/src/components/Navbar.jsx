@@ -8,6 +8,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
+import { LogOut } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { IoCart } from "react-icons/io5";
@@ -44,7 +45,7 @@ const Navbar = ({ isLoggedIn = false, user }) => {
   return (
     <nav className="fixed w-full z-[99] border-b border-white/20 backdrop-blur-xl bg-white/20 dark:bg-gray-900/20 shadow-lg text-black py-[17px]">
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <div className="md:w-[120px] w-[100px]">
+        <div className="md:w-[90px] w-[70px]">
           <Link to="/">
             <img
               className="w-full"
@@ -124,7 +125,7 @@ const Navbar = ({ isLoggedIn = false, user }) => {
                       {user?.user_role === "student" ? (
                         <button
                           style={{
-                            backgroundColor: "black",
+                            backgroundColor: "#262626",
                             outline: "none",
                             padding: "8px 20px",
                           }}
@@ -138,7 +139,7 @@ const Navbar = ({ isLoggedIn = false, user }) => {
                       ) : (
                         <button
                           style={{
-                            backgroundColor: "black",
+                            backgroundColor: "#262626",
                             border: "solid 1px white",
                             padding: "8px 20px",
                           }}
@@ -155,7 +156,7 @@ const Navbar = ({ isLoggedIn = false, user }) => {
                       <div className="w-full flex justify-end">
                         <button
                           style={{
-                            backgroundColor: "black",
+                            backgroundColor: "#262626",
                             outline: "none",
                             padding: "8px 20px",
                           }}
@@ -164,7 +165,7 @@ const Navbar = ({ isLoggedIn = false, user }) => {
                             handleLogout();
                           }}
                         >
-                          ⏻
+                          <LogOut size={20}/>
                         </button>
                       </div>
                     </DialogClose>
@@ -175,10 +176,6 @@ const Navbar = ({ isLoggedIn = false, user }) => {
           ) : (
             <Link
               to={"/login"}
-              // style={{
-              //   background: "linear-gradient(135deg, black, black)",
-              //   boxShadow: "0 0 4px #0c47f7",
-              // }}
               className="bg-white text-sm text-black px-4 py-2 rounded hover:bg-gray-100 transition"
             >
               Login

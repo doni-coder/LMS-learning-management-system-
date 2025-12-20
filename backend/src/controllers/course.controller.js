@@ -32,8 +32,8 @@ const coursePayment = async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: "payment",
-      success_url: "https://lms-learning-management-system-blond.vercel.app/payment-success",
-      cancel_url: "https://lms-learning-management-system-blond.vercel.app/payment-cancel",
+      success_url: `${process.env.FRONTEND_URI}/payment-success`,
+      cancel_url: `${process.env.FRONTEND_URI}/payment-cancel`,
       metadata: {
         studentId,
         courseIds: JSON.stringify(courseIds),

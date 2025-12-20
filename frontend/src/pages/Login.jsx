@@ -8,13 +8,13 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { SpadeIcon } from "lucide-react";
 import Alert from "@/components/Alert";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("student");
+  const [isLoading, setLoading] = useState(false);
   const [alert, setAlert] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -28,26 +28,30 @@ export default function Login() {
       toast.warning("Password length min 6");
     } else {
       try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/auth/login`,
-          {
+        setLoading(true)
+        axios
+          .post(`${import.meta.env.VITE_API_URL}/auth/login`, {
             email,
             password,
             userRole: role,
-          }
-        );
-        if (response.status === 200) {
-          console.log(response.data.user);
-          dispatch(login(response.data.user));
-          dispatch(setUserRole(response.data.user.user_role));
-          toast.success("Login successful");
-          setTimeout(() => {
-            navigate("/");
-          }, 2000);
-        } else {
-          toast.error("Login failed");
-        }
+          })
+          .then((response) => {
+            setLoading(false)
+            dispatch(login(response.data.user));
+            dispatch(setUserRole(response.data.user.user_role));
+            toast.success("Login successful");
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
+          })
+          .catch((error)=>{
+            console.log("error:",error)
+            setLoading(false)
+            toast.error(error?.response?.data?.message || "Login error");
+          })
       } catch (error) {
+        setLoading(false)
+        console.log("error:",error)
         toast.error(error?.response?.data?.message || "Login error");
       }
     }
@@ -73,8 +77,7 @@ export default function Login() {
               onClick={() => {
                 setEmail("test-1@gmail.com");
                 setPassword("123456");
-                setRole("student")
-                
+                setRole("student");
               }}
               style={{ backgroundColor: "gray", padding: "2px 10px" }}
             >
@@ -87,7 +90,7 @@ export default function Login() {
               onClick={() => {
                 setEmail("test-2@gmail.com");
                 setPassword("123456");
-                setRole("instructor")
+                setRole("instructor");
               }}
               style={{ backgroundColor: "gray", padding: "2px 10px" }}
             >
@@ -175,9 +178,42 @@ export default function Login() {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isLoading}
+                className={`w-full py-2 rounded-lg flex items-center justify-center
+    ${
+      isLoading
+        ? "bg-blue-400 cursor-not-allowed"
+        : "bg-blue-600 hover:bg-blue-700"
+    }
+    text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
               >
-                Login
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <svg
+                      className="w-5 h-5 animate-spin text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
+                    </svg>
+                    Logging in...
+                  </span>
+                ) : (
+                  "Login"
+                )}
               </button>
             </form>
 

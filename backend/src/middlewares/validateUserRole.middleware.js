@@ -5,12 +5,12 @@ export const checkUserRole = async (req, res, next) => {
 
     return req.session.save(() => {
       console.log("➡️ Redirecting to role selection");
-      res.redirect("https://lms-learning-management-system-blond.vercel.app/select-userRole");
+      res.redirect(`${process.env.FRONTEND_URI}/select-userRole`);
     });
   }
 
   return req.session.save(() => {
     console.log("➡️ Redirecting to homepage");
-    res.redirect("https://lms-learning-management-system-blond.vercel.app/");
+    res.redirect(`${process.env.FRONTEND_URI}/`);
   });
 };
