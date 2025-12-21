@@ -19,6 +19,7 @@ const InstructorLivePage = () => {
   const [liveCharts, setLiveCharts] = useState([]);
   const [isMute, setMute] = useState(false);
   const [message, setmessage] = useState("");
+  const [liveCount, setLiveCount] = useState(0);
   const { courseId } = useParams();
   const user = useSelector((state) => state.user.user);
   const socket = useSocket();
@@ -58,6 +59,13 @@ const InstructorLivePage = () => {
     [socket]
   );
 
+  const handleLiveStreamCount = useCallback(({ increase }) => {
+    setLiveCount((prev) => prev + increase);
+  });
+  const handleLiveStreamCountDecrease = useCallback(({ decrease }) => {
+    setLiveCount((prev) => prev - decrease);
+  });
+
   const handleStartStream = async () => {
     if (!isStreaming) {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -65,7 +73,6 @@ const InstructorLivePage = () => {
         video: true,
       });
 
-      // Default: audio ON
       stream.getAudioTracks()[0].enabled = true;
 
       setInstructorStream(stream);
@@ -149,6 +156,8 @@ const InstructorLivePage = () => {
     socket.on("student:joined", handleUserJoined);
     socket.on("answer", handelUserAnswer);
     socket.on("receiveMessage", handleReceiveMessage);
+    socket.on("increase_live_view", handleLiveStreamCount);
+    socket.on("decrease_live_view", handleLiveStreamCountDecrease);
 
     socket.on("ice-candidate", ({ fromId, candidate }) => {
       const peer = peers.peers.get(fromId);
@@ -160,6 +169,8 @@ const InstructorLivePage = () => {
     return () => {
       socket.off("student:joined", handleUserJoined);
       socket.off("answer", handelUserAnswer);
+      socket.off("increase_live_view", handleLiveStreamCount);
+      socket.off("decrease_live_view", handleLiveStreamCountDecrease);
       socket.off("ice-candidate");
     };
   }, []);
@@ -203,9 +214,9 @@ const InstructorLivePage = () => {
 
           {/* Live Badge */}
           {isStreaming && (
-            <div className="absolute top-3 left-3 flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full shadow-md text-xs md:text-sm">
+            <div className="absolute top-3 left-3 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full shadow-md text-xs md:text-sm">
               <span className="animate-pulse">🔴 Live</span>
-              <span>• {connectedStudents.size} watching</span>
+              <span>• {liveCount} watching</span>
             </div>
           )}
 

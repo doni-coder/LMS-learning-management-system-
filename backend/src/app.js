@@ -147,6 +147,20 @@ io.on("connection", (socket) => {
     broadcaster.delete(courseId); // Remove broadcaster reference
   });
 
+  socket.on("liveJoinCount", ({ courseId }) => {
+    const broadCasterId = broadcaster.get(courseId)
+    io.to(broadCasterId).emit("increase_live_view", {
+      increase: 1
+    });
+  })
+
+  socket.on("liveJoinCountRemove", ({ courseId }) => {
+    const broadCasterId = broadcaster.get(courseId)
+    io.to(broadCasterId).emit("decrease_live_view", {
+      decrease: 1
+    });
+  })
+
 
 
   socket.on("ice-candidate", ({ targetId, candidate }) => {

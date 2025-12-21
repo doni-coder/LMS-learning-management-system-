@@ -8,7 +8,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { LogOut } from 'lucide-react';
+import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { IoCart } from "react-icons/io5";
@@ -27,19 +27,16 @@ const Navbar = ({ isLoggedIn = false, user }) => {
     }
   }
 
-  console.log("user:", user?.profile_pic);
-
   const handleLogout = async () => {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/auth/logout`
-    );
-    if (response.status === 200) {
-      console.log("Logout successful");
-      navigate("/");
-      window.location.reload();
-    } else {
-      console.error("Logout failed");
-    }
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/auth/logout`)
+      .then((response) => {
+        navigate("/");
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error("Logout failed");
+      });
   };
 
   return (
@@ -49,7 +46,7 @@ const Navbar = ({ isLoggedIn = false, user }) => {
           <Link to="/">
             <img
               className="w-full"
-              src="https://freelogopng.com/images/all_img/1683006915udemy-logo-white.png"
+              src="https://mylms.no/wp-content/uploads/2025/04/logo-lms.png"
               alt=""
             />
           </Link>
@@ -165,7 +162,7 @@ const Navbar = ({ isLoggedIn = false, user }) => {
                             handleLogout();
                           }}
                         >
-                          <LogOut size={20}/>
+                          <LogOut size={20} />
                         </button>
                       </div>
                     </DialogClose>

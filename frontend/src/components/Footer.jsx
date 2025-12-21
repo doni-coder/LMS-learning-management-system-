@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="md:w-[110px] w-[100px]">
             <img
               className="w-full"
-              src="https://freelogopng.com/images/all_img/1683006915udemy-logo-white.png"
+              src="https://mylms.no/wp-content/uploads/2025/04/logo-lms.png"
               alt=""
             />
           </div>
@@ -23,23 +23,18 @@ const Footer = () => {
           <h3 className="font-semibold mb-2">Quick Links</h3>
           <ul className="space-y-2 text-gray-400">
             <li>
-              <a href="/courses" className="hover:text-white">
+              <a href="/" className="hover:text-white">
                 Courses
               </a>
             </li>
             <li>
-              <a href="/about" className="hover:text-white">
+              <a href="/" className="hover:text-white">
                 About Us
               </a>
             </li>
             <li>
-              <a href="/contact" className="hover:text-white">
+              <a href="/" className="hover:text-white">
                 Contact
-              </a>
-            </li>
-            <li>
-              <a href="/faq" className="hover:text-white">
-                FAQs
               </a>
             </li>
           </ul>

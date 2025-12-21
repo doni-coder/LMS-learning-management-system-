@@ -90,11 +90,14 @@ function StreamPage() {
     socket.on("receiveMessage", handleMessageReceive);
     socket.on("stream-ended", handleStreamEnd);
     socket.emit("joinChatRoom", { courseId: id });
+    socket.emit("liveJoinCount",{courseId: id })
 
     return () => {
       socket.off("offer", handleOffer);
       socket.off("ice-candidate");
       socket.off("receiveMessage", handleMessageReceive);
+      socket.off("liveJoinCount")
+      socket.emit("liveJoinCountRemove",{courseId: id })
     };
   }, [socket, handleOffer]);
 
